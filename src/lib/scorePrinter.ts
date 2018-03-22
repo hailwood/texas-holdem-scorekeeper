@@ -36,23 +36,39 @@ export default class ScorePrinter {
     let handDescription;
 
     if (prevEquality.handEqual || nextEquality.handEqual) {
-      const resultScoringCards = result.scoringHandCardNames.map(cn => CardName[cn]).join(', ');
-      handDescription = `${result.toString()} using ${resultScoringCards}; Tied!`;
+      handDescription = this.descriptionWhenHandEqual(result);
     } else if (prevEquality.cardsEqual || nextEquality.cardsEqual) {
-      const resultScoringCards = result.scoringHandCardNames.map(cn => CardName[cn]).join(', ');
-      const kickers = result.kickers.map(card => CardName[card.cardName]).join(', ');
-      handDescription = `${result.toString()} using ${resultScoringCards}; Tie breaker using ${kickers}`;
+      handDescription = this.descriptionWhenCardsEqual(result);
     } else if (prevEquality.handTypeEqual || nextEquality.handTypeEqual) {
-      const resultScoringCards = result.scoringHandCardNames.map(cn => CardName[cn]).join(', ');
-      handDescription = `${result.toString()} using ${resultScoringCards}`;
+      handDescription = this.descriptionWhenHandTypeEqual(result);
     } else {
-      handDescription = result.toString();
+      handDescription = this.descriptionWhenNoCompetition(result);
     }
 
     return {
       handDescription: handDescription,
-      handSameAsPrev: nextEquality.handEqual
+      handSameAsPrev: prevEquality.handEqual
     }
+  }
+
+  protected descriptionWhenHandEqual(result: PokerHandResult) {
+    const resultScoringCards = result.scoringHandCardNames.map(cn => CardName[cn]).join(', ');
+    return `${result.toString()} using ${resultScoringCards}; Tied!`;
+  }
+
+  protected descriptionWhenCardsEqual(result: PokerHandResult) {
+    const resultScoringCards = result.scoringHandCardNames.map(cn => CardName[cn]).join(', ');
+    const kickers = result.kickers.map(card => CardName[card.cardName]).join(', ');
+    return `${result.toString()} using ${resultScoringCards}; Tie breaker using ${kickers}`;
+  }
+
+  protected descriptionWhenHandTypeEqual(result: PokerHandResult) {
+    const resultScoringCards = result.scoringHandCardNames.map(cn => CardName[cn]).join(', ');
+    return `${result.toString()} using ${resultScoringCards}`;
+  }
+
+  protected descriptionWhenNoCompetition(result: PokerHandResult) {
+    return result.toString();
   }
 
   protected calculateHandEquality(handA: NullablePokerHandResult, handB: NullablePokerHandResult) {
@@ -78,11 +94,11 @@ export default class ScorePrinter {
     return this.players.find(player => player.id === id);
   }
 
-  protected getNextPlayerResult(index: number): NullablePokerHandResult {
+  protected getPrevPlayerResult(index: number): NullablePokerHandResult {
     return index > 0 ? this.results[index - 1][1] : undefined;
   }
 
-  protected getPrevPlayerResult(index: number): NullablePokerHandResult {
+  protected getNextPlayerResult(index: number): NullablePokerHandResult {
     return index < this.results.length - 1 ? this.results[index + 1][1] : undefined;
   }
 }
