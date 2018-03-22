@@ -1,0 +1,5 @@
+7S 3S 4C 5H 6D
+Bob Smith 2C 8D
+Sam Smith 8S 9C
+Jane Smith 8C 7H
+Jill Smith 2S 8H
